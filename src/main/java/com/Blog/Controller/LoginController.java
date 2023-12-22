@@ -28,21 +28,21 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> authUser(@RequestBody LoginDTO loginDTO){
-        if (StringUtils.isEmpty(loginDTO.getEmail()) || StringUtils.isEmpty(loginDTO.getPassword())) {
-            return new ResponseEntity<>("Email and password cannot be empty.", HttpStatus.BAD_REQUEST);
+        if (StringUtils.isEmpty(loginDTO.getUsername()) || StringUtils.isEmpty(loginDTO.getPassword())) {
+            return new ResponseEntity<>("Username and password cannot be empty.", HttpStatus.BAD_REQUEST);
         }
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    loginDTO.getEmail(), loginDTO.getPassword()));
+                    loginDTO.getUsername(), loginDTO.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String token = jwtService.generateToken(loginDTO.getEmail());
+            String token = jwtService.generateToken(loginDTO.getUsername());
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
 
             return ResponseEntity.ok(response);
         }catch (Exception e){
-            return new ResponseEntity<>("Invalid email or password.", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,7 +31,7 @@ class LoginControllerTest {
     @Test
     void authUseSuccess() {
         LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail("test@example.com");
+        loginDTO.setUsername("test@example.com");
         loginDTO.setPassword("password");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -48,7 +46,7 @@ class LoginControllerTest {
     @Test
     void authUserInvalidCredentials() {
         LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail("test@example.com");
+        loginDTO.setUsername("test@example.com");
         loginDTO.setPassword("wrongpassword");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -63,7 +61,7 @@ class LoginControllerTest {
     @Test
     void authUserEmptyFields() {
         LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail("");
+        loginDTO.setUsername("");
         loginDTO.setPassword("");
 
         ResponseEntity<String> responseEntity = loginController.authUser(loginDTO);
