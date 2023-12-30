@@ -1,14 +1,13 @@
 package com.Blog.Controller;
 
 import com.Blog.JWT.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -20,10 +19,12 @@ public class UserController {
     public UserController(JwtService jwtService) {
         this.jwtService = jwtService;
     }
+
     @GetMapping("/get-username")
     public ResponseEntity<String> getUsernameFromToken(@RequestHeader("Authorization") String authHeader){
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
-            String token = authHeader.substring(7);
+        String token = extractToken(authHeader);
+
+        if(token != null){
             String username = jwtService.extractUsername(token);
             logger.info("Username {} Extract successfully",username);
             return ResponseEntity.ok(username);
@@ -31,5 +32,25 @@ public class UserController {
             logger.warn("Extract username failed.");
             return ResponseEntity.badRequest().body("Invalid Authorization header");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+
+        if (token != null) {
+            jwtService.addTokenToBlackList(token);
+            logger.info("User Logout Successful. Token added to blacklist: {}", token);
+            return ResponseEntity.ok("Logout Successful");
+        } else {
+            logger.warn("Invalid Authorization header");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header");
+        }
+    }
+    private String extractToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
     }
 }
