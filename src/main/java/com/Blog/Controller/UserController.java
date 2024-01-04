@@ -47,6 +47,28 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header");
         }
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@RequestHeader("Authorization") String authHeader){
+        String refreshToken = extractToken(authHeader);
+
+        if(refreshToken != null){
+            if(jwtService.isTokenBlackListed(refreshToken)){
+                logger.warn("Refresh token is blacklisted: {}",refreshToken);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+            }
+
+            String username = jwtService.extractUsername(refreshToken);
+            String newToken = jwtService.generateToken(username);
+
+            logger.info("Token refresh successful for user: {}",username);
+
+            return ResponseEntity.ok(newToken);
+        }else{
+            logger.warn("Invalid Authorization header");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Authorization header");
+        }
+    }
     private String extractToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);

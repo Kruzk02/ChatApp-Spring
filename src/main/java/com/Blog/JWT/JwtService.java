@@ -73,7 +73,7 @@ public class JwtService{
         tokenBlacklist.add(token);
     }
 
-    private boolean isTokenBlackListed(String token){
+    public boolean isTokenBlackListed(String token){
         return tokenBlacklist.contains(token);
     }
 }
