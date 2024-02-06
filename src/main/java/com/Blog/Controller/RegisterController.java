@@ -42,15 +42,9 @@ public class RegisterController {
             return ResponseEntity.badRequest().body("Email is already taken!");
         }
 
-        User user = new User();
-        user.setUsername(signupDTO.getUsername());
-        user.setEmail(signupDTO.getEmail());
-        user.setPassword(signupDTO.getPassword());
-        user.setEnabled(false);
-
-        User savedUser =  service.saveUser(user);
+        User savedUser = service.saveUser(signupDTO);
         VerificationToken verificationToken = verificationTokenService.generateVerificationToken(savedUser);
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken.getToken());
+        emailService.sendVerificationEmail(signupDTO.getEmail(), verificationToken.getToken());
 
         logger.info("User '{}' registered successfully.Check your email for verification.", signupDTO.getUsername());
 
