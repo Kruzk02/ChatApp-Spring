@@ -1,6 +1,7 @@
 package com.Blog.Service;
 
 import com.Blog.DTO.SignupDTO;
+import com.Blog.DTO.UpdateDTO;
 import com.Blog.Model.User;
 import com.Blog.Repository.RoleRepository;
 import com.Blog.Repository.UserRepository;
@@ -38,7 +39,18 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void update(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        repository.save(user);
+    }
+
+    @Override
     public User findUserByEmail(String email) {
         return repository.findUserByEmail(email);
+    }
+
+    @Override
+    public User findUserByUsername(String username) {
+        return repository.findUserByUsername(username);
     }
 }

@@ -54,7 +54,7 @@ public class LoginController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.warn("Login failed for username: {}", loginDTO.getUsername());
-
+            System.out.println(e.getMessage());
             return ResponseEntity.status(401).body("Invalid username or password.");
         }
     }
